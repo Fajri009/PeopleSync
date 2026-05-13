@@ -7,11 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -33,7 +30,7 @@ import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.Prima
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.paragraph1
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navigateForm: () -> Unit) {
     var search by remember { mutableStateOf("") }
 
     Scaffold(
@@ -44,13 +41,8 @@ fun HomeScreen() {
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .navigationBarsPadding()
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Spacer(modifier = Modifier.size(20.dp))
                 CustomTextField(
                     value = search,
@@ -132,7 +124,7 @@ fun HomeScreen() {
                     .padding(20.dp)
                     .size(60.dp)
                     .align(Alignment.BottomEnd),
-                onClick = {},
+                onClick = navigateForm,
                 containerColor = PrimaryOrange,
                 contentColor = Color.White
             ) {
@@ -149,5 +141,5 @@ fun HomeScreen() {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen {}
 }

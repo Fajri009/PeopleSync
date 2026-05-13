@@ -4,6 +4,8 @@ import androidx.navigation.NavHostController
 
 sealed class PeopleSyncRoutes(val route: String) {
     object Home : PeopleSyncRoutes("home")
+
+    object Form : PeopleSyncRoutes("form")
 }
 
 class PeopleSyncNavigationActions(private val navController: NavHostController) {

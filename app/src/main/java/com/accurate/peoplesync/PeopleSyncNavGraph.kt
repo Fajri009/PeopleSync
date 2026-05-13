@@ -22,8 +22,14 @@ fun PeopleSyncNavGraph(
         modifier = modifier,
         startDestination = startDestination
     ) {
+        val navigateForm = { navActions.navigateTo(PeopleSyncRoutes.Form.route) }
+
         composable(route = PeopleSyncRoutes.Home.route) {
-            HomeScreen()
+            HomeScreen(navigateForm = navigateForm)
+        }
+
+        composable(route = PeopleSyncRoutes.Form.route) {
+
         }
     }
 }
