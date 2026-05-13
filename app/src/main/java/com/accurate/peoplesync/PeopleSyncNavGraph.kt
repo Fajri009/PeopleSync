@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.accurate.peoplesync.ui.module.form.FormScreen
 import com.accurate.peoplesync.ui.module.home.HomeScreen
 
 @Composable
@@ -29,7 +30,7 @@ fun PeopleSyncNavGraph(
         }
 
         composable(route = PeopleSyncRoutes.Form.route) {
-
+            FormScreen(navigateBack = { navController.popBackStack() })
         }
     }
 }
