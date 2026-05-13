@@ -54,7 +54,8 @@ fun HomeScreen() {
                 Spacer(modifier = Modifier.size(20.dp))
                 CustomTextField(
                     value = search,
-                    onValueChange = { search = it }
+                    onValueChange = { search = it },
+                    isSearch = true
                 )
                 Spacer(modifier = Modifier.size(10.dp))
                 Row(
