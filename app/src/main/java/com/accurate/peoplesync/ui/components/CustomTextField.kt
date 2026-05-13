@@ -18,40 +18,44 @@ import androidx.compose.ui.unit.dp
 import com.accurate.peoplesync.R
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.LightOrange
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryOrange
-import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading5
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.paragraph1
 
 @Composable
 fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    isSearch: Boolean,
-    placeHolder: String = ""
+    isSearch: Boolean = false,
+    label: String = ""
 ) {
     Column {
         if (!isSearch) {
             Text(
-                text = placeHolder,
-                style = heading5
+                text = label,
+                style = paragraph1
             )
             Spacer(modifier =  Modifier.size(10.dp))
         }
         OutlinedTextField(
+            placeholder = {
+                if (isSearch) {
+                    Text(text = "Search")
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             value = value,
             onValueChange = onValueChange,
             shape = RoundedCornerShape(5.dp),
             singleLine = true,
             textStyle = paragraph1,
-            leadingIcon = {
-                if (isSearch) {
+            leadingIcon = if (isSearch) {
+                {
                     Icon(
                         modifier = Modifier.size(28.dp),
                         painter = painterResource(id = R.drawable.ic_search),
                         contentDescription = "Icon Search"
                     )
                 }
-            },
+            } else null,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
@@ -71,6 +75,6 @@ fun CustomTextFieldPreview() {
         value = "",
         onValueChange = {},
         isSearch = false,
-        placeHolder = "Nama Lengkap"
+        label = "Nama Lengkap"
     )
 }
