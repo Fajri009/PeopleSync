@@ -8,9 +8,16 @@ import androidx.compose.ui.unit.sp
 class PeopleSyncAppTheme {
     class Color {
         companion object {
-            val PrimaryColor = Color(0xFF2596BE)
+            val PrimaryOrange = Color(0xFFC1410C)
+            val LightOrange = Color(0xFFFDE0C2)
+            val LightYellow = Color(0xFFF9F2D5)
             val SuccessColor = Color(0xFF22C55E)
-            var ErrorColor = Color(0xFFEF4444)
+            val ErrorColor = Color(0xFFEF4444)
+            val BackgroundTextFieldColor = Color(0xFFEAE7ED)
+
+            // Gender Color
+            val DodgerBlue = Color(0xFF3B82F6)
+            val Pink = Color(0xFFEC4899)
         }
     }
 
