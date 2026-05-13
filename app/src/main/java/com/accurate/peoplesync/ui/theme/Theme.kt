@@ -13,14 +13,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.accurate.peoplesync.R
-import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryColor
+import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryOrange
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryColor
+    primary = PrimaryOrange
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryColor
+    primary = PrimaryOrange
 )
 
 val poppinsFontFamily =
