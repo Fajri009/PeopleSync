@@ -20,6 +20,7 @@ interface HomeViewModelType {
 
     fun getUserData()
     fun getAllCity()
+    fun refreshData()
 }
 
 @HiltViewModel
@@ -34,10 +35,7 @@ constructor(
     private val _cityData = MutableStateFlow<FetchDataState<CityResponse>?>(null)
     override val cityData: StateFlow<FetchDataState<CityResponse>?> = _cityData
 
-    init {
-        getUserData()
-        getAllCity()
-    }
+    init { refreshData() }
 
     override fun getUserData() {
         Log.d("HomeViewModel", "Get User Data Called!")
@@ -46,7 +44,13 @@ constructor(
         viewModelScope.launch {
             userRepository.getUser()
                 .catch { error ->
-                    _userData.value = FetchDataState.Error(error.message!!)
+                    val errorMessage =
+                        if (error.message!!.contains("No address associated with hostname", ignoreCase = true)) {
+                            "Tidak dapat terhubung ke server. Periksa konseksi internet Anda dan coba lagi."
+                        } else {
+                            "Terjadi kesalahan. Silahkan dicoba lagi."
+                        }
+                    _userData.value = FetchDataState.Error(errorMessage)
                     Log.e("HomeViewModel", error.message!!)
                 }
                 .collect { response ->
@@ -63,7 +67,13 @@ constructor(
         viewModelScope.launch {
             userRepository.getAllCity()
                 .catch { error ->
-                    _cityData.value = FetchDataState.Error(error.message!!)
+                    val errorMessage =
+                        if (error.message!!.contains("No address associated with hostname", ignoreCase = true)) {
+                            "Tidak dapat terhubung ke server. Periksa konseksi internet Anda dan coba lagi."
+                        } else {
+                            "Terjadi kesalahan. Silahkan dicoba lagi."
+                        }
+                    _cityData.value = FetchDataState.Error(errorMessage)
                     Log.e("HomeViewModel", error.message!!)
                 }
                 .collect { response ->
@@ -71,5 +81,10 @@ constructor(
                     Log.d("HomeViewModel", "Get All City Data Success : $response")
                 }
         }
+    }
+
+    override fun refreshData() {
+        getUserData()
+        getAllCity()
     }
 }
