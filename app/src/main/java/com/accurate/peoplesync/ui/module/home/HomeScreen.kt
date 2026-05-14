@@ -1,5 +1,6 @@
 package com.accurate.peoplesync.ui.module.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ fun HomeScreen(
     val userData by viewModel.userData.collectAsStateWithLifecycle()
 
     var search by remember { mutableStateOf("") }
+    var sortState by remember { mutableStateOf(SortState.DEFAULT) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -68,29 +70,54 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.ic_sort),
-                        contentDescription = "Icon Sort"
-                    )
-                    Spacer(modifier = Modifier.size(3.dp))
-                    Text(
-                        text = "Sort",
-                        style = paragraph1
-                    )
+                    Row(
+                        modifier = Modifier.clickable {
+                            sortState =
+                                when (sortState) {
+                                    SortState.DEFAULT -> SortState.ASCENDING
+                                    SortState.ASCENDING -> SortState.DESCENDING
+                                    SortState.DESCENDING -> SortState.DEFAULT
+                                }
+                        },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(
+                                id =
+                                    when (sortState) {
+                                        SortState.DEFAULT -> R.drawable.ic_sort
+                                        SortState.ASCENDING -> R.drawable.ic_ascending_alpha
+                                        SortState.DESCENDING -> R.drawable.ic_descending_alpha
+                                    }
+                            ),
+                            contentDescription = "Icon Sort"
+                        )
+                        Spacer(modifier = Modifier.size(3.dp))
+                        Text(
+                            text = "Sort",
+                            style = paragraph1
+                        )
+                    }
                     Spacer(modifier = Modifier.size(10.dp))
-                    Icon(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.ic_filter),
-                        contentDescription = "Icon Filter"
-                    )
-                    Spacer(modifier = Modifier.size(3.dp))
-                    Text(
-                        text = "Filter",
-                        style = paragraph1
-                    )
+                    Row(
+                        modifier = Modifier.clickable {
+
+                        },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(id = R.drawable.ic_filter),
+                            contentDescription = "Icon Filter"
+                        )
+                        Spacer(modifier = Modifier.size(3.dp))
+                        Text(
+                            text = "Filter",
+                            style = paragraph1
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.size(20.dp))
                 when (val result = userData) {
@@ -105,13 +132,26 @@ fun HomeScreen(
 
                     is FetchDataState.Success -> {
                         val response = result.data
+                        
+                        val filteredList = response
+                            .filter { user -> // menyaring list
+                                user.name.contains(search, ignoreCase = true) ||
+                                user.email.contains(search, ignoreCase = true)
+                            }
+                            .let { list -> // menjalankan blok pada 1 object
+                                when (sortState) {
+                                    SortState.DEFAULT -> list
+                                    SortState.ASCENDING -> list.sortedBy { it.name }
+                                    SortState.DESCENDING -> list.sortedByDescending { it.name }
+                                }
+                            }
 
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            items(response.size) { index ->
-                                val user = response[index]
+                            items(filteredList.size) { index ->
+                                val user = filteredList[index]
 
                                 UserCard(
                                     name = user.name,

@@ -1,4 +1,4 @@
-package com.accurate.peoplesync.ui.module.home.extensions
+package com.accurate.peoplesync.ui.module.home
 
 fun String.toInitial(): String {
     val words = trim()

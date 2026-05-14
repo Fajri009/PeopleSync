@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.accurate.peoplesync.R
-import com.accurate.peoplesync.ui.module.home.extensions.toInitial
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.DodgerBlue
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.LightOrange
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.Pink
