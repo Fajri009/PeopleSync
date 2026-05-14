@@ -43,7 +43,7 @@ fun FormScreen(navigateBack: () -> Unit) {
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
-    var gender by remember { mutableIntStateOf(0) }
+    var gender by remember { mutableIntStateOf(99) }
 
     Scaffold(containerColor = Color.White) { paddingValues ->
         Column(
@@ -144,7 +144,9 @@ fun FormScreen(navigateBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
-                    enabled = fullName.isNotEmpty() && email.isNotEmpty() && phoneNumber.isNotEmpty() && address.isNotEmpty() && city.isNotEmpty() && gender != 0,
+                    enabled = fullName.isNotEmpty() && email.isNotEmpty()
+                            && phoneNumber.isNotEmpty() && address.isNotEmpty()
+                            && city.isNotEmpty() && (gender == 0 || gender == 1),
                     onClick = { navigateBack() }
                 ) {
                     Text(

@@ -2,7 +2,7 @@ package com.accurate.peoplesync.di
 
 import com.accurate.peoplesync.data.remote.UserRemoteDataSource
 import com.accurate.peoplesync.data.remote.api.UserApi
-import com.accurate.peoplesync.data.repository.PeopleSyncRepository
+import com.accurate.peoplesync.data.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,5 +16,5 @@ object AppModule {
     @Singleton
     fun provideUserRepository(
         userApi: UserApi
-    ): PeopleSyncRepository = UserRemoteDataSource(userApi)
+    ): UserRepository = UserRemoteDataSource(userApi)
 }

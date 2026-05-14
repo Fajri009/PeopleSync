@@ -3,7 +3,7 @@ package com.accurate.peoplesync.viewmodel.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.accurate.peoplesync.data.repository.PeopleSyncRepository
+import com.accurate.peoplesync.data.repository.UserRepository
 import com.accurate.peoplesync.data.repository.model.userResponse.UserResponse
 import com.accurate.peoplesync.di.FetchDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ interface HomeViewModelType {
 class HomeViewModel
 @Inject
 constructor(
-    private val peopleSyncRepository: PeopleSyncRepository
+    private val userRepository: UserRepository
 ) : ViewModel(), HomeViewModelType {
     private val _userData = MutableStateFlow<FetchDataState<UserResponse>?>(null)
     override val userData: StateFlow<FetchDataState<UserResponse>?> = _userData
@@ -35,9 +35,10 @@ constructor(
 
     override fun getUserData() {
         Log.d("HomeViewModel", "Get User Data Called!")
+        _userData.value = FetchDataState.Loading
 
         viewModelScope.launch {
-            peopleSyncRepository.getUser()
+            userRepository.getUser()
                 .catch { error ->
                     _userData.value = FetchDataState.Error(error.message!!)
                     Log.e("HomeViewModel", error.message!!)

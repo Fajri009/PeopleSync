@@ -49,10 +49,10 @@ fun GenderSelector(
             modifier = Modifier
                 .weight(1f)
                 .background(
-                    if (selectedGender == 1) DodgerBlue
+                    if (selectedGender == 0) DodgerBlue
                     else Color.White
                 )
-                .clickable { onGenderSelect(1) }
+                .clickable { onGenderSelect(0) }
                 .padding(15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -62,7 +62,7 @@ fun GenderSelector(
                 painter = painterResource(R.drawable.ic_male),
                 contentDescription = "Icon Laki-laki",
                 tint =
-                    if (selectedGender == 1) Color.White
+                    if (selectedGender == 0) Color.White
                     else Color.Black
             )
             Spacer(modifier = Modifier.size(10.dp))
@@ -70,7 +70,7 @@ fun GenderSelector(
                 text = "Laki-laki",
                 style = paragraph1,
                 color =
-                    if (selectedGender == 1) Color.White
+                    if (selectedGender == 0) Color.White
                     else Color.Black
             )
         }
@@ -83,10 +83,10 @@ fun GenderSelector(
                 .weight(1f)
                 .background(
                     color =
-                        if (selectedGender == 2) Pink
+                        if (selectedGender == 1) Pink
                         else Color.White
                 )
-                .clickable { onGenderSelect(2) }
+                .clickable { onGenderSelect(1) }
                 .padding(15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -96,7 +96,7 @@ fun GenderSelector(
                 painter = painterResource(R.drawable.ic_female),
                 contentDescription = "Icon Perempuan",
                 tint =
-                    if (selectedGender == 2) Color.White
+                    if (selectedGender == 1) Color.White
                     else Color.Black
             )
             Spacer(modifier = Modifier.size(10.dp))
@@ -104,7 +104,7 @@ fun GenderSelector(
                 text = "Perempuan",
                 style = paragraph1,
                 color =
-                    if (selectedGender == 2) Color.White
+                    if (selectedGender == 1) Color.White
                     else Color.Black
             )
         }
@@ -115,7 +115,7 @@ fun GenderSelector(
 @Composable
 fun GenderSelectorPreview() {
     GenderSelector(
-        selectedGender = 0,
+        selectedGender = 99,
         onGenderSelect = {}
     )
 }
