@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.accurate.peoplesync.R
+import com.accurate.peoplesync.data.repository.model.UserRequest
+import com.accurate.peoplesync.di.FetchDataState
 import com.accurate.peoplesync.ui.components.CustomDropDownField
 import com.accurate.peoplesync.ui.components.CustomTextField
 import com.accurate.peoplesync.ui.components.GenderSelector
@@ -35,15 +39,36 @@ import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.Prima
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading5SemiBold
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading6SemiBold
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.paragraph1
+import com.accurate.peoplesync.viewmodel.form.FormViewModelType
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun FormScreen(navigateBack: () -> Unit) {
+fun FormScreen(
+    viewModel: FormViewModelType,
+    navigateBack: () -> Unit
+) {
+    val userState by viewModel.userState.collectAsStateWithLifecycle()
+
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var gender by remember { mutableIntStateOf(99) }
+
+    LaunchedEffect(userState) {
+        when (val result = userState) {
+            is FetchDataState.Loading -> {}
+
+            is FetchDataState.Error -> {}
+
+            is FetchDataState.Success -> {
+                if (result.data == 201) navigateBack()
+            }
+
+            null -> {}
+        }
+    }
 
     Scaffold(containerColor = Color.White) { paddingValues ->
         Column(
@@ -147,7 +172,18 @@ fun FormScreen(navigateBack: () -> Unit) {
                     enabled = fullName.isNotEmpty() && email.isNotEmpty()
                             && phoneNumber.isNotEmpty() && address.isNotEmpty()
                             && city.isNotEmpty() && (gender == 0 || gender == 1),
-                    onClick = { navigateBack() }
+                    onClick = {
+                        val userData = UserRequest(
+                            name = fullName,
+                            address = address,
+                            email = email,
+                            phoneNumber = phoneNumber,
+                            city = city,
+                            gender = gender
+                        )
+
+                        viewModel.addUserData(userData)
+                    }
                 ) {
                     Text(
                         modifier = Modifier.padding(5.dp),
@@ -163,5 +199,13 @@ fun FormScreen(navigateBack: () -> Unit) {
 @Preview
 @Composable
 fun FormScreenPreview() {
-    FormScreen {}
+    val viewModel = object : FormViewModelType {
+        override val userState = MutableStateFlow(null)
+        override fun addUserData(userData: UserRequest) { }
+    }
+
+    FormScreen(
+        viewModel = viewModel,
+        navigateBack = {}
+    )
 }

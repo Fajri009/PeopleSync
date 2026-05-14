@@ -1,6 +1,7 @@
 package com.accurate.peoplesync.data.remote.api
 
 import com.accurate.peoplesync.data.repository.model.UserRequest
+import com.accurate.peoplesync.data.repository.model.userResponse.UserItem
 import com.accurate.peoplesync.data.repository.model.userResponse.UserResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -18,5 +19,5 @@ interface UserApi {
     @POST("user")
     suspend fun addUser(
         @Body request: UserRequest
-    ): Response<UserResponse>
+    ): Response<UserItem>
 }

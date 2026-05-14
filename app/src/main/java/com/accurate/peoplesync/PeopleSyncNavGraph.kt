@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.accurate.peoplesync.ui.module.form.FormScreen
 import com.accurate.peoplesync.ui.module.home.HomeScreen
+import com.accurate.peoplesync.viewmodel.form.FormViewModel
 import com.accurate.peoplesync.viewmodel.home.HomeViewModel
 
 @Composable
@@ -25,6 +26,7 @@ fun PeopleSyncNavGraph(
         modifier = modifier,
         startDestination = startDestination
     ) {
+        val navigateHome = { navActions.navigateTo(PeopleSyncRoutes.Home.route) }
         val navigateForm = { navActions.navigateTo(PeopleSyncRoutes.Form.route) }
 
         composable(route = PeopleSyncRoutes.Home.route) {
@@ -37,7 +39,12 @@ fun PeopleSyncNavGraph(
         }
 
         composable(route = PeopleSyncRoutes.Form.route) {
-            FormScreen(navigateBack = { navController.popBackStack() })
+            val viewModel = hiltViewModel<FormViewModel>()
+
+            FormScreen(
+                viewModel = viewModel,
+                navigateBack = navigateHome
+            )
         }
     }
 }
