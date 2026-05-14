@@ -163,8 +163,8 @@ private fun FilterBottomSheetPreview() {
             .background(Color.White)
     ) {
         val cityDummy = listOf(
-            CityItem(name = "Tangerang", id = 1),
-            CityItem(name = "Depok", id = 2)
+            CityItem(name = "Tangerang", id = "1"),
+            CityItem(name = "Depok", id = "2")
         )
 
         FilterBottomSheet(

@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -36,13 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.accurate.peoplesync.R
-import com.accurate.peoplesync.data.repository.model.cityResponse.CityResponse
-import com.accurate.peoplesync.di.FetchDataState
 import com.accurate.peoplesync.ui.components.CustomTextField
 import com.accurate.peoplesync.ui.components.FilterBottomSheet
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.LightOrange
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryOrange
-import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading5SemiBold
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading6
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.paragraph1
 import com.accurate.peoplesync.viewmodel.home.HomeViewModelType
@@ -56,6 +51,7 @@ fun HomeScreen(
 ) {
     val userData by viewModel.userData.collectAsStateWithLifecycle()
     val cityData by viewModel.cityData.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     var search by remember { mutableStateOf("") }
     var sortState by remember { mutableStateOf(SortState.DEFAULT) }
@@ -63,7 +59,6 @@ fun HomeScreen(
     var filteredCity by remember { mutableStateOf("") }
     var filteredGender by remember { mutableIntStateOf(99) }
 
-    val isRefreshing = userData is FetchDataState.Loading || cityData is FetchDataState.Loading
     val pullRefreshState = rememberPullToRefreshState()
 
     Scaffold(
@@ -157,117 +152,82 @@ fun HomeScreen(
                         )
                     }
                 ) {
-                    when (val result = userData) {
-                        is FetchDataState.Loading -> {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                    val filteredList = userData
+                        ?.filter { user ->
+                            val nameSearch =
+                                user.name.contains(search, ignoreCase = true) ||
+                                user.email.contains(search, ignoreCase = true)
+
+                            val citySearch =
+                                filteredCity.isEmpty() ||
+                                user.city.equals(filteredCity, ignoreCase = true)
+
+                            val genderSearch =
+                                filteredGender == 99 ||
+                                user.gender == filteredGender
+
+                            nameSearch && citySearch && genderSearch
+                        }
+                        ?.let { list ->
+                            when (sortState) {
+                                SortState.DEFAULT -> list
+                                SortState.ASCENDING -> list.sortedBy { it.name }
+                                SortState.DESCENDING -> list.sortedByDescending { it.name }
                             }
                         }
 
-                        is FetchDataState.Success -> {
-                            val response = result.data
-
-                            val filteredList = response
-                                .filter { user -> // menyaring list
-                                    val nameSearch =
-                                        user.name.contains(search, ignoreCase = true) ||
-                                                user.email.contains(search, ignoreCase = true)
-
-                                    val citySearch =
-                                        filteredCity.isEmpty() ||
-                                                user.city.equals(filteredCity, ignoreCase = true)
-
-                                    val genderSearch =
-                                        filteredGender == 99 ||
-                                                user.gender == filteredGender
-
-                                    nameSearch && citySearch && genderSearch
-                                }
-                                .let { list -> // menjalankan blok pada 1 object
-                                    when (sortState) {
-                                        SortState.DEFAULT -> list
-                                        SortState.ASCENDING -> list.sortedBy { it.name }
-                                        SortState.DESCENDING -> list.sortedByDescending { it.name }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        when {
+                            userData == null -> {
+                                item {
+                                    Box(
+                                        modifier = Modifier.fillParentMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
                                     }
                                 }
+                            }
 
-                            when {
-                                filteredList.isEmpty() -> {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
+                            filteredList.isNullOrEmpty() -> {
+                                item {
+                                    Box(
+                                        modifier = Modifier.fillParentMaxSize(),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(
-                                            modifier = Modifier.size(100.dp),
-                                            painter = painterResource(id = R.drawable.ic_inbox),
-                                            contentDescription = "Icon Empty Data"
-                                        )
-                                        Spacer(modifier = Modifier.size(10.dp))
-                                        Text(
-                                            text = "Data Tidak Ditemukan",
-                                            style = heading6
-                                        )
-                                    }
-                                }
-                                else -> {
-                                    LazyColumn(
-                                        modifier = Modifier.fillMaxSize(),
-                                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                                    ) {
-                                        items(filteredList.size) { index ->
-                                            val user = filteredList[index]
-
-                                            UserCard(
-                                                name = user.name,
-                                                address = user.address,
-                                                city = user.city,
-                                                email = user.email,
-                                                phoneNumber = user.phoneNumber,
-                                                gender = user.gender
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Icon(
+                                                modifier = Modifier.size(100.dp),
+                                                painter = painterResource(id = R.drawable.ic_inbox),
+                                                contentDescription = null
                                             )
+                                            Spacer(Modifier.size(10.dp))
+                                            Text("Data Tidak Ditemukan", style = heading6)
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        is FetchDataState.Error -> {
-                            AlertDialog(
-                                onDismissRequest = {  },
-                                title = {
-                                    Text(
-                                        text = "PeopleSync",
-                                        style = heading5SemiBold
+                            else -> {
+                                items(filteredList.size) { index ->
+                                    val user = filteredList[index]
+
+                                    UserCard(
+                                        name = user.name,
+                                        address = user.address,
+                                        city = user.city,
+                                        email = user.email,
+                                        phoneNumber = user.phoneNumber,
+                                        gender = user.gender
                                     )
-                                },
-                                text = {
-                                    Text(
-                                        text = result.message,
-                                        style = paragraph1,
-                                        color = Color.Black
-                                    )
-                                },
-                                containerColor = Color.White,
-                                confirmButton = {
-                                    Button(
-                                        onClick = { viewModel.refreshData() }
-                                    ) {
-                                        Text("OK")
-                                    }
                                 }
-                            )
-                        }
 
-                        null -> {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                                item {
+                                    Spacer(Modifier.size(20.dp))
+                                }
                             }
                         }
                     }
@@ -290,21 +250,17 @@ fun HomeScreen(
                 )
             }
 
-            if (showFilterBottomSheet) {
-                if (cityData is FetchDataState.Success) {
-                    val cityList = (cityData as FetchDataState.Success<CityResponse>).data
-
-                    FilterBottomSheet(
-                        onDismiss = { showFilterBottomSheet = false },
-                        cityData = cityList,
-                        selectedCity = filteredCity,
-                        selectedGender = filteredGender,
-                        onApply = { city, gender ->
-                            filteredCity = city
-                            filteredGender = gender
-                        }
-                    )
-                }
+            if (showFilterBottomSheet && cityData != null) {
+                FilterBottomSheet(
+                    onDismiss = { showFilterBottomSheet = false },
+                    cityData = cityData ?: emptyList(),
+                    selectedCity = filteredCity,
+                    selectedGender = filteredGender,
+                    onApply = { city, gender ->
+                        filteredCity = city
+                        filteredGender = gender
+                    }
+                )
             }
         }
     }
@@ -316,7 +272,11 @@ fun HomeScreenPreview() {
     val viewModel = object : HomeViewModelType {
         override val userData = MutableStateFlow(null)
         override val cityData = MutableStateFlow(null)
+        override val isRefreshing = MutableStateFlow(false)
+
+        override fun setUserData() { }
         override fun getUserData() { }
+        override fun setCityData() { }
         override fun getAllCity() { }
         override fun refreshData() { }
     }
