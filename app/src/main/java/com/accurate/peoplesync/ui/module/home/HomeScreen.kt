@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -24,13 +26,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.accurate.peoplesync.R
+import com.accurate.peoplesync.di.FetchDataState
 import com.accurate.peoplesync.ui.components.CustomTextField
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryOrange
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.paragraph1
+import com.accurate.peoplesync.viewmodel.home.HomeViewModelType
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun HomeScreen(navigateForm: () -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModelType,
+    navigateForm: () -> Unit
+) {
+    val userData by viewModel.userData.collectAsStateWithLifecycle()
+
     var search by remember { mutableStateOf("") }
 
     Scaffold(
@@ -42,7 +53,11 @@ fun HomeScreen(navigateForm: () -> Unit) {
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+            ) {
                 Spacer(modifier = Modifier.size(20.dp))
                 CustomTextField(
                     value = search,
@@ -78,46 +93,49 @@ fun HomeScreen(navigateForm: () -> Unit) {
                     )
                 }
                 Spacer(modifier = Modifier.size(20.dp))
-                UserCard(
-                    name = "Tiko",
-                    address = "Jl. Menang Nomer Kalah",
-                    city = "Yogyakarta",
-                    email = "tiko@gmail.com",
-                    phoneNumber = "081398302869",
-                    gender = 0
-                )
-                UserCard(
-                    name = "Tiko",
-                    address = "Jl. Menang Nomer Kalah",
-                    city = "Yogyakarta",
-                    email = "tiko@gmail.com",
-                    phoneNumber = "081398302869",
-                    gender = 0
-                )
-                UserCard(
-                    name = "Tiko",
-                    address = "Jl. Menang Nomer Kalah",
-                    city = "Yogyakarta",
-                    email = "tiko@gmail.com",
-                    phoneNumber = "081398302869",
-                    gender = 0
-                )
-                UserCard(
-                    name = "Tiko",
-                    address = "Jl. Menang Nomer Kalah",
-                    city = "Yogyakarta",
-                    email = "tiko@gmail.com",
-                    phoneNumber = "081398302869",
-                    gender = 0
-                )
-                UserCard(
-                    name = "Tiko",
-                    address = "Jl. Menang Nomer Kalah",
-                    city = "Yogyakarta",
-                    email = "tiko@gmail.com",
-                    phoneNumber = "081398302869",
-                    gender = 0
-                )
+                when (val result = userData) {
+                    is FetchDataState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    is FetchDataState.Success -> {
+                        val response = result.data
+
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(response.size) { index ->
+                                val user = response[index]
+
+                                UserCard(
+                                    name = user.name,
+                                    address = user.address,
+                                    city = user.city,
+                                    email = user.email,
+                                    phoneNumber = user.phoneNumber,
+                                    gender = user.gender
+                                )
+                            }
+                        }
+                    }
+
+                    is FetchDataState.Error -> { }
+
+                    null -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
             }
             FloatingActionButton(
                 modifier = Modifier
@@ -141,5 +159,13 @@ fun HomeScreen(navigateForm: () -> Unit) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen {}
+    val viewModel = object : HomeViewModelType {
+        override val userData = MutableStateFlow(null)
+        override fun getUserData() { }
+    }
+
+    HomeScreen(
+        viewModel = viewModel,
+        navigateForm = {}
+    )
 }

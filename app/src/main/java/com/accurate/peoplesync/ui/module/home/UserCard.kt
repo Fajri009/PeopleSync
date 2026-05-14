@@ -22,11 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.accurate.peoplesync.R
+import com.accurate.peoplesync.ui.module.home.extensions.toInitial
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.DodgerBlue
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.LightOrange
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.Pink
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryOrange
-import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading2
+import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading3
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading5SemiBold
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.paragraph2
 
@@ -40,9 +41,7 @@ fun UserCard(
     gender: Int
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -60,8 +59,8 @@ fun UserCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "T",
-                    style = heading2,
+                    text = name.toInitial(),
+                    style = heading3,
                     color = PrimaryOrange
                 )
             }

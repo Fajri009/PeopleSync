@@ -1,6 +1,8 @@
 package com.accurate.peoplesync.data.repository.model.userResponse
 
-data class UserResponse(
+typealias UserResponse = List<UserItem>
+
+data class UserItem(
     val name: String,
     val address: String,
     val email: String,
