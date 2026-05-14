@@ -3,6 +3,7 @@ package com.accurate.peoplesync.data.remote
 import com.accurate.peoplesync.data.remote.api.UserApi
 import com.accurate.peoplesync.data.repository.UserRepository
 import com.accurate.peoplesync.data.repository.model.UserRequest
+import com.accurate.peoplesync.data.repository.model.cityResponse.CityResponse
 import com.accurate.peoplesync.data.repository.model.userResponse.UserItem
 import com.accurate.peoplesync.data.repository.model.userResponse.UserResponse
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,13 @@ class UserRemoteDataSource(
     override suspend fun getUser(): Flow<UserResponse> =
         flow {
             val response = userApi.getUser()
+
+            emit(response)
+        }
+
+    override suspend fun getAllCity(): Flow<CityResponse> =
+        flow {
+            val response = userApi.getAllCity()
 
             emit(response)
         }

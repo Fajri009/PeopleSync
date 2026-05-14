@@ -7,6 +7,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -16,11 +17,23 @@ import com.accurate.peoplesync.R
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryOrange
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryOrange
+    primary = PrimaryOrange,
+    outline = PrimaryOrange,
+    background = Color.White,
+    surface = Color.White,
+    onPrimary = Color.White,
+    onBackground = Color.Black,
+    onSurface = Color.Black
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryOrange
+    primary = PrimaryOrange,
+    outline = PrimaryOrange,
+    background = Color.White,
+    surface = Color.White,
+    onPrimary = Color.White,
+    onBackground = Color.Black,
+    onSurface = Color.Black
 )
 
 val poppinsFontFamily =
@@ -36,7 +49,7 @@ val poppinsFontFamily =
 fun PeopleSyncTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

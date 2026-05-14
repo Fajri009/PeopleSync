@@ -14,6 +14,8 @@ class PeopleSyncAppTheme {
             val SuccessColor = Color(0xFF22C55E)
             val ErrorColor = Color(0xFFEF4444)
             val BackgroundTextFieldColor = Color(0xFFEAE7ED)
+            val Gray = Color(0xFFD1D5DB)
+            val OverlayScrimDark = Color(0x99000000)
 
             // Gender Color
             val DodgerBlue = Color(0xFF3B82F6)

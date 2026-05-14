@@ -1,6 +1,7 @@
 package com.accurate.peoplesync.data.remote.api
 
 import com.accurate.peoplesync.data.repository.model.UserRequest
+import com.accurate.peoplesync.data.repository.model.cityResponse.CityResponse
 import com.accurate.peoplesync.data.repository.model.userResponse.UserItem
 import com.accurate.peoplesync.data.repository.model.userResponse.UserResponse
 import retrofit2.Response
@@ -15,6 +16,9 @@ interface UserApi {
         @Query("name") name: String = "",
         @Query("city") city: String = ""
     ): UserResponse
+
+    @GET("city")
+    suspend fun getAllCity(): CityResponse
 
     @POST("user")
     suspend fun addUser(
