@@ -1,6 +1,8 @@
 package com.accurate.peoplesync.di
 
+import com.accurate.peoplesync.data.remote.UserRemoteDataSource
 import com.accurate.peoplesync.data.remote.api.UserApi
+import com.accurate.peoplesync.data.repository.UserRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -40,4 +42,10 @@ object NetworkModule {
     ): UserApi {
         return retrofit.create(UserApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        userApi: UserApi
+    ): UserRepository = UserRemoteDataSource(userApi)
 }

@@ -3,10 +3,10 @@ package com.accurate.peoplesync.viewmodel.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.accurate.peoplesync.data.repository.DbRepository
 import com.accurate.peoplesync.data.repository.UserRepository
 import com.accurate.peoplesync.data.repository.model.cityResponse.CityResponse
 import com.accurate.peoplesync.data.repository.model.userResponse.UserResponse
-import com.accurate.peoplesync.data.room.RepositoryDb
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +33,7 @@ class HomeViewModel
 @Inject
 constructor(
     private val userRepository: UserRepository,
-    private val dbRepository: RepositoryDb
+    private val dbRepository: DbRepository
 ) : ViewModel(), HomeViewModelType {
     private val _userData = MutableStateFlow<UserResponse?>(null)
     override val userData: StateFlow<UserResponse?> = _userData

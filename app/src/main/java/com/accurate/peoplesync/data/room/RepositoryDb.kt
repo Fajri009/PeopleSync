@@ -1,5 +1,6 @@
 package com.accurate.peoplesync.data.room
 
+import com.accurate.peoplesync.data.repository.DbRepository
 import com.accurate.peoplesync.data.repository.model.cityResponse.CityItem
 import com.accurate.peoplesync.data.repository.model.cityResponse.CityResponse
 import com.accurate.peoplesync.data.repository.model.userResponse.UserItem
@@ -12,8 +13,8 @@ import kotlin.collections.map
 class RepositoryDb @Inject constructor(
     private val userDao: UserDao,
     private val cityDao: CityDao
-) {
-    fun getUsers(): Flow<UserResponse> {
+): DbRepository {
+    override fun getUsers(): Flow<UserResponse> {
         return userDao.getUsers().map { users ->
             users.map { user ->
                 UserItem(
@@ -29,7 +30,7 @@ class RepositoryDb @Inject constructor(
         }
     }
 
-    suspend fun insertUsers(users: UserResponse) {
+    override suspend fun insertUsers(users: UserResponse) {
         val userEntity = users.map { user ->
             UserEntity(
                 id = user.id,
@@ -45,7 +46,7 @@ class RepositoryDb @Inject constructor(
         userDao.insertUsers(userEntity)
     }
 
-    fun getCity(): Flow<CityResponse> {
+    override fun getCity(): Flow<CityResponse> {
         return cityDao.getCity().map { cities ->
             cities.map { city ->
                 CityItem(
@@ -56,7 +57,7 @@ class RepositoryDb @Inject constructor(
         }
     }
 
-    suspend fun insertCity(city: CityResponse) {
+    override suspend fun insertCity(city: CityResponse) {
         val cityEntity = city.map { city ->
             CityEntity(
                 id = city.id,
