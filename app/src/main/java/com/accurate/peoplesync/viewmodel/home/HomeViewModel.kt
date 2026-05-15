@@ -18,6 +18,8 @@ interface HomeViewModelType {
     val userData: StateFlow<UserResponse?>
     val cityData: StateFlow<CityResponse?>
     val isRefreshing: StateFlow<Boolean>
+    val showErrorDialog: StateFlow<Boolean>
+    val errorMessage: StateFlow<String>
 
     fun setUserData()
     fun getUserData()
@@ -42,6 +44,18 @@ constructor(
     private val _isRefreshing = MutableStateFlow(false)
     override val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
+    private val _showErrorDialog = MutableStateFlow(false)
+    override val showErrorDialog: StateFlow<Boolean> = _showErrorDialog
+
+    private val _errorMessage = MutableStateFlow("")
+    override val errorMessage: StateFlow<String> = _errorMessage
+
+    private var userApiFailed = false
+    private var cityApiFailed = false
+
+    private var userDbReady = false
+    private var cityDbReady = false
+
     init { refreshData() }
 
     override fun setUserData() {
@@ -49,14 +63,29 @@ constructor(
 
         viewModelScope.launch {
             _isRefreshing.value = true
+            userApiFailed = false
 
             userRepository.getUser()
                 .catch { error ->
-                    Log.e("HomeViewModel", error.message!!)
                     _isRefreshing.value = false
+                    userApiFailed = true
+                    Log.e("HomeViewModel", error.message!!)
+
+                    val errorMessage =
+                        if (error.message!!.contains("No address associated with hostname", ignoreCase = true)) {
+                            "Tidak dapat terhubung ke server. Periksa konseksi internet Anda dan coba lagi."
+                        } else {
+                            "Terjadi kesalahan. Silahkan dicoba lagi."
+                        }
+
+                    _errorMessage.value = errorMessage
+
+                    checkErrorState()
                 }
                 .collect { response ->
                     _isRefreshing.value = false
+                    userApiFailed = false
+
                     dbRepository.insertUsers(response)
                     Log.d("HomeViewModel", "Get User Data Success : $response")
                 }
@@ -69,6 +98,10 @@ constructor(
         viewModelScope.launch {
             dbRepository.getUsers().collect { users ->
                 _userData.value = users
+                _showErrorDialog.value = users.isEmpty()
+                userDbReady = true
+
+                checkErrorState()
             }
         }
     }
@@ -78,14 +111,29 @@ constructor(
 
         viewModelScope.launch {
             _isRefreshing.value = true
+            cityApiFailed = false
 
             userRepository.getAllCity()
                 .catch { error ->
-                    Log.e("HomeViewModel", error.message!!)
                     _isRefreshing.value = false
+                    cityApiFailed = true
+                    Log.e("HomeViewModel", error.message!!)
+
+                    val errorMessage =
+                        if (error.message!!.contains("No address associated with hostname", ignoreCase = true)) {
+                            "Tidak dapat terhubung ke server. Periksa konseksi internet Anda dan coba lagi."
+                        } else {
+                            "Terjadi kesalahan. Silahkan dicoba lagi."
+                        }
+
+                    _errorMessage.value = errorMessage
+
+                    checkErrorState()
                 }
                 .collect { response ->
                     _isRefreshing.value = false
+                    userApiFailed = false
+
                     dbRepository.insertCity(response)
                     Log.d("HomeViewModel", "Get All City Data Success : $response")
                 }
@@ -98,6 +146,9 @@ constructor(
         viewModelScope.launch {
             dbRepository.getCity().collect { city ->
                 _cityData.value = city
+                cityDbReady = true
+
+                checkErrorState()
             }
         }
     }
@@ -110,5 +161,15 @@ constructor(
         // City Data
         setCityData()
         getAllCity()
+    }
+
+    private fun checkErrorState() {
+        val userEmpty = _userData.value.isNullOrEmpty()
+        val cityEmpty = _cityData.value.isNullOrEmpty()
+
+        val dbReady = userDbReady || cityDbReady
+        val apiFailed = userApiFailed || cityApiFailed
+
+        _showErrorDialog.value = dbReady && apiFailed && userEmpty && cityEmpty
     }
 }

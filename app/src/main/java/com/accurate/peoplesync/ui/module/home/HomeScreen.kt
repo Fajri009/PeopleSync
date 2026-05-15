@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,6 +40,7 @@ import com.accurate.peoplesync.ui.components.CustomTextField
 import com.accurate.peoplesync.ui.components.FilterBottomSheet
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.LightOrange
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Color.Companion.PrimaryOrange
+import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading5SemiBold
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.heading6
 import com.accurate.peoplesync.ui.theme.PeopleSyncAppTheme.Text.Companion.paragraph1
 import com.accurate.peoplesync.viewmodel.home.HomeViewModelType
@@ -52,6 +55,8 @@ fun HomeScreen(
     val userData by viewModel.userData.collectAsStateWithLifecycle()
     val cityData by viewModel.cityData.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val showErrorDialog by viewModel.showErrorDialog.collectAsStateWithLifecycle()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
     var search by remember { mutableStateOf("") }
     var sortState by remember { mutableStateOf(SortState.DEFAULT) }
@@ -262,6 +267,35 @@ fun HomeScreen(
                     }
                 )
             }
+
+            if (showErrorDialog) {
+                AlertDialog(
+                    onDismissRequest = { },
+                    title = {
+                        Text(
+                            text = "PeopleSync",
+                            style = heading5SemiBold
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = errorMessage,
+                            style = paragraph1,
+                            color = Color.Black
+                        )
+                    },
+                    containerColor = Color.White,
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.refreshData()
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
         }
     }
 }
@@ -273,6 +307,8 @@ fun HomeScreenPreview() {
         override val userData = MutableStateFlow(null)
         override val cityData = MutableStateFlow(null)
         override val isRefreshing = MutableStateFlow(false)
+        override val showErrorDialog = MutableStateFlow(false)
+        override val errorMessage = MutableStateFlow("")
 
         override fun setUserData() { }
         override fun getUserData() { }
